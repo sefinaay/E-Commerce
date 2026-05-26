@@ -14,7 +14,6 @@ return [
     */
 
     'name' => env('APP_NAME', 'Laravel'),
-
     'makeup_api_url' => env('MAKEUP_API_URL', 'http://makeup-api.herokuapp.com/api/v1'),
     'rajaongkir_key' => env('RAJAONGKIR_API_KEY', ''),
     /*
