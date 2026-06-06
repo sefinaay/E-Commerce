@@ -14,6 +14,11 @@ Route::get('/product/{id}', [ShopController::class, 'product'])
 
 Route::get('/cart', [ShopController::class, 'cart'])->name('cart');
 
+
+Route::get('/journal', [ShopController::class, 'journalPage']);
+
+Route::get('/journal/{slug}', [ShopController::class, 'journalDetail']);
+
 Route::get('/checkout', [ShopController::class, 'checkout'])
     ->name('checkout');
 
@@ -35,6 +40,11 @@ Route::get('/profile', [ShopController::class, 'profilePage'])
 Route::get('/discover', [ShopController::class, 'discoverPage'])
     ->name('discover');
 
+Route::get('/wishlist', [ShopController::class, 'wishlistPage']);
+
+Route::get('/search', [ShopController::class, 'searchPage']);
+
+Route::get('/about', [ShopController::class, 'aboutPage']);
 // API Gateway
 Route::prefix('gateway')->group(function () {
     Route::any('{path?}', [GatewayController::class, 'handle'])

@@ -2,26 +2,113 @@
     "openapi": "3.0.0",
     "info": {
         "title": "GlowMart API",
-        "description": "REST API E-Commerce Makeup GlowMart — JWT Auth, Role-based Access, API Gateway, Third-party Makeup API Integration",
+        "description": "REST API E-Commerce Makeup GlowMart — JWT Auth, Role-based Access, API Gateway, Makeup API Integration",
         "contact": {
             "email": "admin@glowmart.com"
         },
         "version": "1.0.0"
     },
-    "servers": [
-        {
-            "url": "http://localhost:8000",
-            "description": "Local Dev"
-        }
-    ],
     "paths": {
+        "/api/auth/register": {
+            "post": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Registrasi akun baru",
+                "operationId": "1b32a46aa6e4c7069484becddc3c1cb5",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "name",
+                                    "email",
+                                    "password",
+                                    "password_confirmation"
+                                ],
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Sefina Ayu"
+                                    },
+                                    "email": {
+                                        "type": "string",
+                                        "example": "sefina@email.com"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "08123456789"
+                                    },
+                                    "password": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    },
+                                    "password_confirmation": {
+                                        "type": "string",
+                                        "example": "password123"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Registrasi berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "access_token": {
+                                                    "type": "string"
+                                                },
+                                                "token_type": {
+                                                    "type": "string",
+                                                    "example": "bearer"
+                                                },
+                                                "expires_in": {
+                                                    "type": "integer",
+                                                    "example": 3600
+                                                },
+                                                "user": {
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validasi gagal"
+                    }
+                },
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
+                ]
+            }
+        },
         "/api/auth/login": {
             "post": {
                 "tags": [
-                    "Auth"
+                    "Authentication"
                 ],
                 "summary": "Login dan dapatkan JWT token",
-                "operationId": "b2d79c995139fbe1bbd02d802c8ff735",
+                "operationId": "d2ccf16d3290199474ab2ac3859bcf87",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -51,48 +138,299 @@
                         "description": "Login berhasil"
                     },
                     "401": {
-                        "description": "Kredensial salah"
+                        "description": "Email atau password salah"
                     },
                     "422": {
                         "description": "Validasi gagal"
                     }
-                }
+                },
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
+                ]
             }
         },
-        "/api/auth/register": {
+        "/api/auth/profile": {
+            "get": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Ambil profil user yang sedang login",
+                "operationId": "271382bf3a0d60928078bd87b0fbde5d",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil"
+                    },
+                    "401": {
+                        "description": "Token tidak valid"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
+                ]
+            },
+            "put": {
+                "tags": [
+                    "Authentication"
+                ],
+                "summary": "Update profil user",
+                "operationId": "f62bdb43717487323a074e5e5f6f2923",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string",
+                                        "example": "Nama Baru"
+                                    },
+                                    "phone": {
+                                        "type": "string",
+                                        "example": "08999999999"
+                                    },
+                                    "address": {
+                                        "type": "string",
+                                        "example": "Jl. Baru No. 1"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Profil diperbarui"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
+                ]
+            }
+        },
+        "/api/auth/logout": {
             "post": {
                 "tags": [
-                    "Auth"
+                    "Authentication"
                 ],
-                "summary": "Registrasi akun baru",
-                "operationId": "06bb6d28c6f72090906e933363873669",
+                "summary": "Logout dan invalidate token",
+                "operationId": "53ea7befb9d45272abc61a4eacbb7c48",
+                "responses": {
+                    "200": {
+                        "description": "Logout berhasil"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
+                ]
+            }
+        },
+        "/api/products": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Daftar semua produk aktif (public)",
+                "operationId": "4f5642ccfdcfbf64b070584df84832f2",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Cari nama produk",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "category_id",
+                        "in": "query",
+                        "description": "Filter by kategori",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "brand",
+                        "in": "query",
+                        "description": "Filter by brand",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "min_price",
+                        "in": "query",
+                        "description": "Harga minimum",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "max_price",
+                        "in": "query",
+                        "description": "Harga maksimum",
+                        "schema": {
+                            "type": "number"
+                        }
+                    },
+                    {
+                        "name": "sort",
+                        "in": "query",
+                        "description": "Kolom sorting",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "created_at",
+                                "price",
+                                "name"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "order",
+                        "in": "query",
+                        "description": "Arah sorting",
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "asc",
+                                "desc"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "description": "Jumlah per halaman",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil"
+                    }
+                },
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
+                ]
+            }
+        },
+        "/api/products/{id}": {
+            "get": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Detail produk beserta kategori dan review",
+                "operationId": "1075e60d5b0bf23761a21681c2894c33",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil"
+                    },
+                    "404": {
+                        "description": "Produk tidak ditemukan"
+                    }
+                },
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
+                ]
+            }
+        },
+        "/api/admin/products": {
+            "post": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Tambah produk baru (Admin only)",
+                "operationId": "4dc2bff121635aa221f77c118aee250f",
                 "requestBody": {
                     "required": true,
                     "content": {
                         "application/json": {
                             "schema": {
                                 "required": [
+                                    "category_id",
                                     "name",
-                                    "email",
-                                    "password",
-                                    "password_confirmation"
+                                    "price",
+                                    "stock"
                                 ],
                                 "properties": {
+                                    "category_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
                                     "name": {
                                         "type": "string",
-                                        "example": "Siti Aminah"
+                                        "example": "Rose Velvet Lipstick"
                                     },
-                                    "email": {
-                                        "type": "string",
-                                        "example": "siti@email.com"
+                                    "price": {
+                                        "type": "number",
+                                        "example": 89000
                                     },
-                                    "password": {
-                                        "type": "string",
-                                        "example": "password123"
+                                    "stock": {
+                                        "type": "integer",
+                                        "example": 50
                                     },
-                                    "password_confirmation": {
+                                    "brand": {
                                         "type": "string",
-                                        "example": "password123"
+                                        "example": "Maybelline"
+                                    },
+                                    "description": {
+                                        "type": "string"
+                                    },
+                                    "image": {
+                                        "type": "string",
+                                        "example": "https://example.com/img.jpg"
                                     }
                                 },
                                 "type": "object"
@@ -102,21 +440,133 @@
                 },
                 "responses": {
                     "201": {
-                        "description": "Registrasi berhasil"
+                        "description": "Produk berhasil dibuat"
+                    },
+                    "403": {
+                        "description": "Akses ditolak - bukan admin"
                     },
                     "422": {
                         "description": "Validasi gagal"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
+                ]
             }
         },
-        "/api/auth/profile": {
+        "/api/admin/products/{id}": {
+            "put": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Update produk (Admin only)",
+                "operationId": "178a48a56c97924ff1f60ff8345f815e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "properties": {
+                                    "name": {
+                                        "type": "string"
+                                    },
+                                    "price": {
+                                        "type": "number"
+                                    },
+                                    "stock": {
+                                        "type": "integer"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Produk diperbarui"
+                    },
+                    "403": {
+                        "description": "Akses ditolak"
+                    },
+                    "404": {
+                        "description": "Tidak ditemukan"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Products"
+                ],
+                "summary": "Hapus produk (Admin only)",
+                "operationId": "4e2fc67ab0713177d6d0b91504ec9bc9",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Produk dihapus"
+                    },
+                    "403": {
+                        "description": "Akses ditolak"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
+                ]
+            }
+        },
+        "/api/cart": {
             "get": {
                 "tags": [
-                    "Auth"
+                    "Cart"
                 ],
-                "summary": "Ambil profil user yang sedang login",
-                "operationId": "2ed31709dc1b2613897f5beedec4b521",
+                "summary": "Lihat isi keranjang belanja",
+                "operationId": "424d1f6aa127fb65b1a2b6ff0fce0a28",
                 "responses": {
                     "200": {
                         "description": "Berhasil"
@@ -129,72 +579,13 @@
                     {
                         "bearerAuth": []
                     }
+                ],
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
                 ]
-            }
-        },
-        "/api/products": {
-            "get": {
-                "tags": [
-                    "Products"
-                ],
-                "summary": "Daftar semua produk aktif (public)",
-                "operationId": "d53e9ba5638f83b411c003721d0dd0ac",
-                "parameters": [
-                    {
-                        "name": "search",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "category_id",
-                        "in": "query",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    },
-                    {
-                        "name": "brand",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "min_price",
-                        "in": "query",
-                        "schema": {
-                            "type": "number"
-                        }
-                    },
-                    {
-                        "name": "max_price",
-                        "in": "query",
-                        "schema": {
-                            "type": "number"
-                        }
-                    },
-                    {
-                        "name": "sort",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "per_page",
-                        "in": "query",
-                        "schema": {
-                            "type": "integer"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Berhasil"
-                    }
-                }
             }
         },
         "/api/cart/add": {
@@ -203,7 +594,7 @@
                     "Cart"
                 ],
                 "summary": "Tambah produk ke keranjang",
-                "operationId": "80439e6e41d8711ac96b537e8a32df38",
+                "operationId": "60e2afa5b3e870e348544cfee84633f8",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -230,10 +621,70 @@
                 },
                 "responses": {
                     "200": {
-                        "description": "Berhasil ditambahkan"
+                        "description": "Ditambahkan ke keranjang"
                     },
                     "400": {
                         "description": "Stok tidak cukup"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Validasi gagal"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
+                ]
+            }
+        },
+        "/api/cart/{id}": {
+            "put": {
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Update quantity item di keranjang",
+                "operationId": "8cd8d2560484a2f3816722d87743589e",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "quantity"
+                                ],
+                                "properties": {
+                                    "quantity": {
+                                        "type": "integer",
+                                        "example": 3
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Berhasil diupdate"
                     },
                     "401": {
                         "description": "Unauthorized"
@@ -243,16 +694,84 @@
                     {
                         "bearerAuth": []
                     }
+                ],
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
+                ]
+            },
+            "delete": {
+                "tags": [
+                    "Cart"
+                ],
+                "summary": "Hapus item dari keranjang",
+                "operationId": "b4a1c17a15a03441eea23748aaf53385",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Item dihapus"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
                 ]
             }
         },
         "/api/orders": {
+            "get": {
+                "tags": [
+                    "Orders"
+                ],
+                "summary": "Daftar pesanan milik user yang login",
+                "operationId": "cd98de6a4905e5949364fb17815fed4c",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
+                ]
+            },
             "post": {
                 "tags": [
                     "Orders"
                 ],
                 "summary": "Buat pesanan baru dari keranjang",
-                "operationId": "4f5424496a658534f31f9a46210d9455",
+                "operationId": "3dc6614a6326b247ae1b4a0a7e22133a",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -266,7 +785,7 @@
                                 "properties": {
                                     "shipping_address": {
                                         "type": "string",
-                                        "example": "Jl. Contoh No. 1"
+                                        "example": "Jl. Contoh No. 123"
                                     },
                                     "shipping_city": {
                                         "type": "string",
@@ -279,6 +798,14 @@
                                             "cod",
                                             "ewallet"
                                         ]
+                                    },
+                                    "shipping_cost": {
+                                        "type": "number",
+                                        "example": 15000
+                                    },
+                                    "notes": {
+                                        "type": "string",
+                                        "example": "Ketuk pintu 2x"
                                     }
                                 },
                                 "type": "object"
@@ -292,43 +819,63 @@
                     },
                     "400": {
                         "description": "Keranjang kosong"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "422": {
+                        "description": "Validasi gagal"
                     }
                 },
                 "security": [
                     {
                         "bearerAuth": []
                     }
+                ],
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
                 ]
             }
         },
-        "/api/external/makeup/search": {
-            "get": {
+        "/api/orders/{id}/cancel": {
+            "post": {
                 "tags": [
-                    "External"
+                    "Orders"
                 ],
-                "summary": "Cari produk dari Makeup API",
-                "operationId": "f2235ff2fb7225344fedacce8f8bc89e",
+                "summary": "Batalkan pesanan",
+                "operationId": "bb659a7ca657ff73b99291e6092260f0",
                 "parameters": [
                     {
-                        "name": "brand",
-                        "in": "query",
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
                         "schema": {
-                            "type": "string"
-                        }
-                    },
-                    {
-                        "name": "product_type",
-                        "in": "query",
-                        "schema": {
-                            "type": "string"
+                            "type": "integer"
                         }
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "Berhasil dari API eksternal"
+                        "description": "Pesanan dibatalkan"
+                    },
+                    "400": {
+                        "description": "Pesanan tidak bisa dibatalkan"
                     }
-                }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
+                ]
             }
         },
         "/api/admin/dashboard": {
@@ -336,8 +883,72 @@
                 "tags": [
                     "Admin"
                 ],
-                "summary": "Statistik dashboard admin",
-                "operationId": "33fbf6cd7ab49a5d9076f55e4755dcbb",
+                "summary": "Statistik dashboard admin (Admin only)",
+                "operationId": "e3dc4c9e0718b76baab9bf331e22c02d",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "total_users": {
+                                                    "type": "integer"
+                                                },
+                                                "total_products": {
+                                                    "type": "integer"
+                                                },
+                                                "total_orders": {
+                                                    "type": "integer"
+                                                },
+                                                "total_revenue": {
+                                                    "type": "number"
+                                                },
+                                                "recent_orders": {
+                                                    "type": "array",
+                                                    "items": {
+                                                        "type": "object"
+                                                    }
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Akses ditolak — bukan admin"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
+                ]
+            }
+        },
+        "/api/admin/orders": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Semua pesanan (Admin only)",
+                "operationId": "8ff312277a0bf6964766c0889f4472dc",
                 "responses": {
                     "200": {
                         "description": "Berhasil"
@@ -350,6 +961,186 @@
                     {
                         "bearerAuth": []
                     }
+                ],
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
+                ]
+            }
+        },
+        "/api/admin/orders/{id}/status": {
+            "put": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Update status pesanan (Admin only)",
+                "operationId": "58a399873feb243a08cbac468798b1c7",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "status"
+                                ],
+                                "properties": {
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "pending",
+                                            "processing",
+                                            "shipped",
+                                            "delivered",
+                                            "cancelled"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Status diperbarui"
+                    },
+                    "403": {
+                        "description": "Akses ditolak"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
+                ]
+            }
+        },
+        "/api/admin/users": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Semua pengguna (Admin only)",
+                "operationId": "30859517d8711c5a3da09a214c8696ce",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil"
+                    },
+                    "403": {
+                        "description": "Akses ditolak"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
+                ]
+            }
+        },
+        "/api/external/makeup/search": {
+            "get": {
+                "tags": [
+                    "External API"
+                ],
+                "summary": "Cari produk dari Makeup API eksternal (makeup-api.herokuapp.com)",
+                "operationId": "8c3e5d241d5b97b26b711f0db6c4eb82",
+                "parameters": [
+                    {
+                        "name": "brand",
+                        "in": "query",
+                        "description": "Filter by brand",
+                        "schema": {
+                            "type": "string",
+                            "example": "maybelline"
+                        }
+                    },
+                    {
+                        "name": "product_type",
+                        "in": "query",
+                        "description": "Filter by tipe produk",
+                        "schema": {
+                            "type": "string",
+                            "example": "lipstick"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil dari API eksternal atau fallback database",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "source": {
+                                            "type": "string",
+                                            "example": "local-database-fallback"
+                                        },
+                                        "data": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
+                ]
+            }
+        },
+        "/api/external/makeup/brands": {
+            "get": {
+                "tags": [
+                    "External API"
+                ],
+                "summary": "Daftar brand dari Makeup API",
+                "operationId": "0712ef90b6ce0bfa3a99ebd7b34f5f7b",
+                "responses": {
+                    "200": {
+                        "description": "Berhasil"
+                    }
+                },
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
                 ]
             }
         },
@@ -359,7 +1150,7 @@
                     "Shipping"
                 ],
                 "summary": "Kalkulasi ongkos kirim",
-                "operationId": "6ca5be61b5e9cb73eefe6f3b63642563",
+                "operationId": "426d9b118b5e2bf66d74cf897175555c",
                 "requestBody": {
                     "required": true,
                     "content": {
@@ -401,11 +1192,227 @@
                 "responses": {
                     "200": {
                         "description": "Berhasil"
+                    },
+                    "422": {
+                        "description": "Validasi gagal"
                     }
                 },
                 "security": [
                     {
                         "bearerAuth": []
+                    }
+                ],
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
+                ]
+            }
+        },
+        "/gateway/products": {
+            "get": {
+                "tags": [
+                    "Gateway"
+                ],
+                "summary": "Akses produk melalui API Gateway",
+                "description": "API Gateway sebagai pintu masuk utama. Menambahkan rate limiting, logging, dan header X-Gateway.",
+                "operationId": "251399b01c8dee9665f5ac57be90e65d",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "category_id",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil",
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "data": {
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "429": {
+                        "description": "Rate limit exceeded"
+                    }
+                },
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
+                ]
+            }
+        },
+        "/api/journal": {
+            "get": {
+                "tags": [
+                    "Journal"
+                ],
+                "summary": "Daftar artikel journal yang published (public)",
+                "operationId": "0dac080c0e8f09176defedccb51960ae",
+                "parameters": [
+                    {
+                        "name": "category",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "per_page",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil"
+                    }
+                },
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
+                ]
+            }
+        },
+        "/api/journal/{slug}": {
+            "get": {
+                "tags": [
+                    "Journal"
+                ],
+                "summary": "Detail artikel journal",
+                "operationId": "015651a6eebc66bd7ceba59a20c9a0e7",
+                "parameters": [
+                    {
+                        "name": "slug",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Berhasil"
+                    },
+                    "404": {
+                        "description": "Artikel tidak ditemukan"
+                    }
+                },
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
+                    }
+                ]
+            }
+        },
+        "/api/admin/journals": {
+            "post": {
+                "tags": [
+                    "Journal"
+                ],
+                "summary": "Buat artikel baru (Admin only)",
+                "operationId": "9d0f6515bbc857787a2bf2d9b25fe580",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "required": [
+                                    "title",
+                                    "content",
+                                    "category",
+                                    "status"
+                                ],
+                                "properties": {
+                                    "title": {
+                                        "type": "string",
+                                        "example": "Glass Skin Guide"
+                                    },
+                                    "content": {
+                                        "type": "string",
+                                        "example": "<p>Content here...</p>"
+                                    },
+                                    "excerpt": {
+                                        "type": "string"
+                                    },
+                                    "cover_image": {
+                                        "type": "string"
+                                    },
+                                    "category": {
+                                        "type": "string",
+                                        "example": "Skincare"
+                                    },
+                                    "read_time": {
+                                        "type": "integer",
+                                        "example": 5
+                                    },
+                                    "status": {
+                                        "type": "string",
+                                        "enum": [
+                                            "draft",
+                                            "published"
+                                        ]
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "201": {
+                        "description": "Artikel berhasil dibuat"
+                    },
+                    "403": {
+                        "description": "Akses ditolak"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ],
+                "servers": [
+                    {
+                        "url": "http://127.0.0.1:8000",
+                        "description": "Local Development Server"
                     }
                 ]
             }
@@ -415,6 +1422,7 @@
         "securitySchemes": {
             "bearerAuth": {
                 "type": "http",
+                "description": "Masukkan token JWT: Bearer {token}",
                 "in": "header",
                 "bearerFormat": "JWT",
                 "scheme": "bearer"
@@ -423,12 +1431,12 @@
     },
     "tags": [
         {
-            "name": "Auth",
-            "description": "Authentication endpoints"
+            "name": "Authentication",
+            "description": "Login, Register, Profile, Logout"
         },
         {
             "name": "Products",
-            "description": "Produk endpoints"
+            "description": "CRUD Produk"
         },
         {
             "name": "Cart",
@@ -436,19 +1444,27 @@
         },
         {
             "name": "Orders",
-            "description": "Pesanan"
+            "description": "Pemesanan"
         },
         {
             "name": "Admin",
-            "description": "Admin only endpoints"
+            "description": "Endpoint khusus admin"
         },
         {
-            "name": "External",
-            "description": "Third-party API integrations"
+            "name": "External API",
+            "description": "Integrasi Makeup API pihak ketiga"
         },
         {
             "name": "Shipping",
             "description": "Kalkulasi ongkos kirim"
+        },
+        {
+            "name": "Journal",
+            "description": "Artikel beauty journal"
+        },
+        {
+            "name": "Gateway",
+            "description": "API Gateway endpoint"
         }
     ]
 }
